@@ -1,7 +1,10 @@
 console.log('SCRIPT_START');
-var API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:5000/api'
-  : window.location.origin + '/api';
+var API_URL = 'http://localhost:5000/api';
+try {
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    API_URL = window.location.origin + '/api';
+  }
+} catch(e) { /* use default localhost URL */ }
 let state = { user: null, token: null, role: null, currentDetail: null };
 
 
@@ -85,7 +88,6 @@ function showPage(pageId) {
 }
 
 function showAuth(role) {
-  alert('showAuth called: ' + role);
   console.log('SHOW_AUTH_CALLED role=' + role);
   document.getElementById('auth-target-role').value = role;
   showPage('page-auth');
