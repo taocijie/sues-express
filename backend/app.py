@@ -19,6 +19,12 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 with app.app_context():
     db.create_all()
+    # Default passwords for known accounts
+    for u, p in [('newadmin','admin123'),('2','admin123'),('N','admin123'),('A','admin123'),('user1','123456'),('test_pub','123456')]:
+        user = User.query.filter_by(username=u).first()
+        if user:
+            user.set_password(p)
+    db.session.commit()
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in {"png", "jpg", "jpeg", "gif"}
