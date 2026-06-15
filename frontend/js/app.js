@@ -2,6 +2,54 @@ console.log('SCRIPT_START');
 const API_URL = 'http://localhost:5000/api';
 let state = { user: null, token: null, role: null, currentDetail: null };
 
+
+// Make all functions accessible as globals
+window.showAuth = showAuth;
+window.showPage = showPage;  
+window.handleAuth = handleAuth;
+window.logout = logout;
+window.showEntry = showEntry;
+window.navigateTo = navigateTo;
+window.closeDetail = closeDetail;
+window.showToast = showToast;
+window.toggleAuthMode = toggleAuthMode;
+window.publishOrder = publishOrder;
+window.switchPubTab = switchPubTab;
+window.loadMyOrders = loadMyOrders;
+window.filterMyOrders = filterMyOrders;
+window.checkDeliveryStatus = checkDeliveryStatus;
+window.submitDeliveryApply = submitDeliveryApply;
+window.previewPhoto = previewPhoto;
+window.switchDelTab = switchDelTab;
+window.loadAvailableOrders = loadAvailableOrders;
+window.loadMyDeliveries = loadMyDeliveries;
+window.filterMyDeliveries = filterMyDeliveries;
+window.acceptOrder = acceptOrder;
+window.renderOrderItem = renderOrderItem;
+window.showOrderDetail = showOrderDetail;
+window.completeOrder = completeOrder;
+window.cancelOrder = cancelOrder;
+window.showRatingForm = showRatingForm;
+window.setRating = setRating;
+window.submitRating = submitRating;
+window.closeModal = closeModal;
+window.showDisputeForm = showDisputeForm;
+window.submitDispute = submitDispute;
+window.payOrder = payOrder;
+window.confirmPay = confirmPay;
+window.loadAdminDashboard = loadAdminDashboard;
+window.switchAdminTab = switchAdminTab;
+window.loadAdminVerify = loadAdminVerify;
+window.verifyDelivery = verifyDelivery;
+window.loadAdminOrders = loadAdminOrders;
+window.loadAdminUsers = loadAdminUsers;
+window.adminBlockUser = adminBlockUser;
+window.adminUnblockUser = adminUnblockUser;
+window.clearWarnings = clearWarnings;
+window.setAsAdmin = setAsAdmin;
+window.resolveDispute = resolveDispute;
+window.adminCancelOrder = adminCancelOrder;
+
 window.onload = function() { showPage('page-entry'); };
 const TOKEN_KEY = 'sues_express_token';
 const USER_KEY = 'sues_express_user';
@@ -40,7 +88,7 @@ function showAuth(role) {
   showPage('page-auth');
 }
 
-async function handleAuth() {
+async function handleAuth() { console.log('handleAuth called');
   console.log('HANDLE_AUTH_CALLED');
   const username = document.getElementById('auth-username').value.trim();
   const password = document.getElementById('auth-password').value.trim();
