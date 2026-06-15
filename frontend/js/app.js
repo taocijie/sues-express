@@ -73,7 +73,20 @@ try {
         else showEntry();
     }
 } catch(e) {}
-try {
+
+    // Entry page buttons - use addEventListener (夸克浏览器不支持onclick)
+    var entryBtns = document.querySelectorAll('.entry-btn, .admin-badge');
+    for (var b = 0; b < entryBtns.length; b++) {
+        (function(btn) {
+            if (btn.classList.contains('entry-btn')) {
+                var role = btn.classList.contains('pickup') ? 'publisher' : 'delivery';
+                btn.addEventListener('click', function(e) { showAuth(role); });
+            } else {
+                btn.addEventListener('click', function(e) { showAuth('admin'); });
+            }
+        })(entryBtns[b]);
+    }
+  try {
     var pw = document.getElementById('pub-weight');
     if (pw) pw.addEventListener('input', updatePricePreview);
     var loginBtn = document.getElementById('auth-submit-btn');
