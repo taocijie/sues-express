@@ -123,7 +123,7 @@ async function api(path, options = {}) {
   if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
   const res = await fetch(API_URL + path, { ...options, headers });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || '请求失败');
+  if (!res.ok) throw new Error(data.error || data.msg || '请求失败');
   return data;
 }
 
@@ -647,6 +647,6 @@ async function apiForm(path, fd) {
   if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
   const res = await fetch(API_URL + path, { method: 'POST', headers, body: fd });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || '请求失败');
+  if (!res.ok) throw new Error(data.error || data.msg || '请求失败');
   return data;
 }
