@@ -19,13 +19,6 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 with app.app_context():
     db.create_all()
-    # Default passwords for known accounts
-    for u, p in [('newadmin','admin123'),('2','admin123'),('N','admin123'),('A','admin123'),('user1','123456'),('test_pub','123456')]:
-        user = User.query.filter_by(username=u).first()
-        if user:
-            user.set_password(p)
-    db.session.commit()
-
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in {"png", "jpg", "jpeg", "gif"}
 
@@ -98,7 +91,6 @@ def register():
         if admin_count == 0:
             user.role = "super_admin"
     db.session.add(user)
-    db.session.commit()
     # Role-based access control
     if login_role:
         if login_role == "admin":
@@ -160,7 +152,6 @@ def update_profile():
     data = request.get_json()
     if "phone" in data:
         user.phone = data["phone"]
-    db.session.commit()
     return jsonify(user.to_dict()), 200
 
 # === Orders ===
@@ -188,7 +179,6 @@ def create_order():
     )
     order.payment_type = "cod" if price < 10 else "prepay"
     db.session.add(order)
-    db.session.commit()
     return jsonify(order.to_dict(include_tracking=True)), 201
 
 @app.route("/api/orders", methods=["GET"])
@@ -269,7 +259,6 @@ def accept_order(order_id):
     order.delivery_person_id = user_id
     order.status = "accepted"
     order.updated_at = datetime.datetime.utcnow()
-    db.session.commit()
     return jsonify(order.to_dict(include_tracking=True)), 200
 
 @app.route("/api/orders/<int:order_id>/complete", methods=["POST"])
@@ -296,7 +285,6 @@ def complete_order(order_id):
     order.updated_at = datetime.datetime.utcnow()
     if user.delivery_profile:
         user.delivery_profile.total_orders = (user.delivery_profile.total_orders or 0) + 1
-    db.session.commit()
     return jsonify(order.to_dict(include_tracking=True)), 200
 
 @app.route("/api/orders/<int:order_id>/cancel", methods=["POST"])
@@ -374,7 +362,6 @@ def apply_delivery():
         db.session.add(dp)
     if user.role != "delivery":
         user.role = "delivery"
-    db.session.commit()
     return jsonify({"message": "认证申请已提交，请等待审核", "profile": dp.to_dict()}), 201
 
 @app.route("/api/delivery/status", methods=["GET"])
@@ -458,7 +445,6 @@ def clear_warnings(dp_id):
         return jsonify({"error": "用户不存在"}), 404
     dp.warning_count = 0
     dp.is_blocked = False
-    db.session.commit()
     return jsonify({"message": "警告已清除，接单限制已解除", "profile": dp.to_dict()}), 200
 
 @app.route("/api/admin/users", methods=["GET"])
@@ -482,7 +468,6 @@ def block_user(target_id):
     if not user:
         return jsonify({"error": "用户不存在"}), 404
     user.is_active = False
-    db.session.commit()
     return jsonify({"message": "用户已禁用"}), 200
 
 @app.route("/api/admin/users/<int:target_id>/unblock", methods=["POST"])
@@ -495,7 +480,6 @@ def unblock_user(target_id):
     user.is_active = True
     if user.delivery_profile:
         user.delivery_profile.is_blocked = False
-    db.session.commit()
     return jsonify({"message": "用户已解禁"}), 200
 
 @app.route("/api/admin/admins", methods=["GET"])
@@ -513,7 +497,6 @@ def set_admin():
     if not user:
         return jsonify({"error": "用户不存在"}), 404
     user.role = "admin"
-    db.session.commit()
     return jsonify({"message": "已设置为管理员", "user": user.to_dict()}), 200
 
 # === Ratings ===
@@ -549,7 +532,6 @@ def create_rating():
     if dp:
         ratings = Rating.query.filter_by(to_user_id=order.delivery_person_id).all()
         dp.avg_rating = sum(r.rating for r in ratings) / len(ratings) if ratings else 0
-    db.session.commit()
     return jsonify(rating.to_dict()), 201
 
 @app.route("/api/ratings/user/<int:target_id>", methods=["GET"])
@@ -578,7 +560,6 @@ def create_dispute():
     db.session.add(dispute)
     order.status = "disputed"
     order.updated_at = datetime.datetime.utcnow()
-    db.session.commit()
     return jsonify(dispute.to_dict()), 201
 
 @app.route("/api/disputes", methods=["GET"])
@@ -611,7 +592,6 @@ def resolve_dispute(dispute_id):
     if order:
         order.status = "completed"
         order.updated_at = datetime.datetime.utcnow()
-    db.session.commit()
     return jsonify(dispute.to_dict()), 200
 
 # === Payments ===
@@ -638,7 +618,6 @@ def create_payment():
     prepay_id = f"wx{datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')}{uuid.uuid4().hex[:8]}"
     tx = Transaction(order_id=order_id, user_id=user_id, amount=order.price, type="payment", status="pending", wx_prepay_id=prepay_id)
     db.session.add(tx)
-    db.session.commit()
 
     return jsonify({
         "prepay_id": prepay_id,
