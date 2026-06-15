@@ -312,10 +312,12 @@ function renderOrderItem(order, role) {
 // ==== Order Detail Functions ====
 async function showOrderDetail(id) {
   try {
+    const cls = 'status-' + id;
     const order = await api('/orders/' + id);
     state.currentDetail = order;
     showPage('page-order-detail');
     const c = document.getElementById('order-detail-content');
+    const cls = 'status-' + order.status;
     const canSee = !order.tracking_number.includes('****');
     let actions = '';
     if (state.role === 'delivery' && order.status === 'pending' && deliveryVerified)
