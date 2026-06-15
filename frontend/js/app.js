@@ -590,3 +590,13 @@ function closeDetail() {
 
 }
 console.log('SCRIPT_END');
+
+// ==== Form Data Upload ====
+async function apiForm(path, fd) {
+  const headers = {};
+  if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
+  const res = await fetch(API_URL + path, { method: 'POST', headers, body: fd });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || '请求失败');
+  return data;
+}
