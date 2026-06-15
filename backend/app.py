@@ -94,13 +94,15 @@ def register():
     db.session.add(user)
     db.session.commit()
     # Role-based access control
-    if login_role and login_role != user.role:
-        if login_role == "delivery":
-            return jsonify({"error": "该账号不是接单人，请使用接单入口登录"}), 403
-        elif login_role == "publisher":
-            return jsonify({"error": "该账号不是取件人，请使用取件入口登录"}), 403
-        elif login_role == "admin":
-            return jsonify({"error": "该账号不是管理员"}), 403
+    if login_role:
+        if login_role == "admin":
+            if user.role not in ("admin", "super_admin"):
+                return jsonify({"error": "该账号不是管理员"}), 403
+        elif login_role != user.role:
+            if login_role == "delivery":
+                return jsonify({"error": "该账号不是接单人，请使用接单入口登录"}), 403
+            elif login_role == "publisher":
+                return jsonify({"error": "该账号不是取件人，请使用取件入口登录"}), 403
 
     token = create_access_token(identity=str(user.id))
     return jsonify({"token": token, "user": user.to_dict()}), 201
@@ -116,13 +118,15 @@ def login():
     if not user or not user.check_password(password):
         return jsonify({"error": "用户名或密码错误"}), 401
     login_role = data.get("login_role", "").strip()
-    if login_role and login_role != user.role:
-        if login_role == "delivery":
-            return jsonify({"error": "该账号不是接单人，请使用接单入口登录"}), 403
-        elif login_role == "publisher":
-            return jsonify({"error": "该账号不是取件人，请使用取件入口登录"}), 403
-        elif login_role == "admin":
-            return jsonify({"error": "该账号不是管理员"}), 403
+    if login_role:
+        if login_role == "admin":
+            if user.role not in ("admin", "super_admin"):
+                return jsonify({"error": "该账号不是管理员"}), 403
+        elif login_role != user.role:
+            if login_role == "delivery":
+                return jsonify({"error": "该账号不是接单人，请使用接单入口登录"}), 403
+            elif login_role == "publisher":
+                return jsonify({"error": "该账号不是取件人，请使用取件入口登录"}), 403
     if not user.is_active:
         return jsonify({"error": "账号已被禁用"}), 403
     token = create_access_token(identity=str(user.id))
