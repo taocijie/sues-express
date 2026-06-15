@@ -103,7 +103,8 @@ async function handleAuth() { console.log('handleAuth called');
   try {
     let data;
     if (isLogin) {
-      data = await api('/auth/login', { method: 'POST', body: JSON.stringify({ username, password, login_role: role }) });
+      const loginRole = role === 'admin' ? 'super_admin' : role;
+      data = await api('/auth/login', { method: 'POST', body: JSON.stringify({ username, password, login_role: loginRole }) });
     } else {
       data = await api('/auth/register', { method: 'POST', body: JSON.stringify({ username, password, role }) });
     }
@@ -164,6 +165,8 @@ async function publishOrder() {
   }
   data.weight = parseFloat(document.getElementById('pub-weight').value) || 0;
   data.notes = document.getElementById('pub-notes').value.trim();
+  const w2 = data.weight;
+  data.package_size = w2 <= 0.5 ? 'small' : w2 <= 1 ? 'medium' : w2 <= 2 ? 'large' : 'xlarge';
   try {
     await api('/orders', { method: 'POST', body: JSON.stringify(data) });
     showToast('订单发布成功');
