@@ -85,6 +85,7 @@ function showPage(pageId) {
 }
 
 function showAuth(role) {
+  alert('showAuth called: ' + role);
   console.log('SHOW_AUTH_CALLED role=' + role);
   document.getElementById('auth-target-role').value = role;
   showPage('page-auth');
