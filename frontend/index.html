@@ -18,6 +18,7 @@ body {
   background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.5;
 }
 .app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; }
+#page-entry { display: block; }
 .page { display: none; }
 .page.active { display: block; }
 
@@ -190,6 +191,7 @@ body {
 </style>
 </head>
 <body>
+  <div id="loading" style="text-align:center;padding:40px;font-size:16px;color:#888;">📦 SUES 校园快递 · 加载中...</div>
   <div class="app-container" id="app">
     
     <!-- ===== Entry Page ===== -->
@@ -383,7 +385,11 @@ body {
 var API_URL = 'https://sues-express.onrender.com/api';
 let state = { user: null, token: null, role: null, currentDetail: null };
 
-window.onload = function() { showPage('page-entry'); };
+window.onload = function() {
+  var ld = document.getElementById('loading');
+  if (ld) ld.style.display = 'none';
+  showPage('page-entry');
+};
 const TOKEN_KEY = 'sues_express_token';
 const USER_KEY = 'sues_express_user';
 
