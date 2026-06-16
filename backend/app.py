@@ -1,4 +1,4 @@
-﻿import os, json, uuid, datetime, hashlib, hmac, base64
+import os, json, uuid, datetime, hashlib, hmac, base64
 from io import BytesIO
 from functools import wraps
 
@@ -99,7 +99,7 @@ def register():
             return jsonify({"error": "该账号不是接单人，请使用接单入口登录"}), 403
         elif login_role == "publisher":
             return jsonify({"error": "该账号不是取件人，请使用取件入口登录"}), 403
-        elif login_role == "admin":
+        elif login_role == "admin" and user.role not in ("admin", "super_admin"):
             return jsonify({"error": "该账号不是管理员"}), 403
 
     token = create_access_token(identity=str(user.id))
@@ -121,7 +121,7 @@ def login():
             return jsonify({"error": "该账号不是接单人，请使用接单入口登录"}), 403
         elif login_role == "publisher":
             return jsonify({"error": "该账号不是取件人，请使用取件入口登录"}), 403
-        elif login_role == "admin":
+        elif login_role == "admin" and user.role not in ("admin", "super_admin"):
             return jsonify({"error": "该账号不是管理员"}), 403
     if not user.is_active:
         return jsonify({"error": "账号已被禁用"}), 403
