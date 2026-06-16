@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>SUES 鏍″洯蹇€?/title>
+  
+<style>
+/* SUES Campus Express - Original WeChat Style */
+:root {
+  --green: #07c160; --green-light: #f0fff4; --danger: #ee0a24;
+  --warning: #ff9800; --bg: #f5f5f5; --card: #fff;
+  --text: #333; --text-secondary: #888; --border: #eee;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.5;
+}
+.app-container { max-width: 500px; margin: 0 auto; min-height: 100vh; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* Top Nav */
+.top-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: white;
+  position: sticky; top: 0; z-index: 10;
+}
+.top-nav .back-btn { font-size: 24px; cursor: pointer; line-height: 1; }
+.top-nav .title { font-size: 17px; font-weight: 600; }
+
+/* Entry Page */
+.entry-header { padding: 12px 16px 0; text-align: right; }
+.admin-badge {
+  font-size: 13px; color: var(--text-secondary); cursor: pointer;
+  padding: 6px 14px; border-radius: 20px; background: var(--card);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.entry-grid { padding: 60px 16px 40px; text-align: center; }
+.app-brand { margin-bottom: 40px; }
+.app-brand .logo { font-size: 56px; display: block; margin-bottom: 12px; }
+.entry-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+.entry-subtitle { font-size: 14px; color: var(--text-secondary); }
+.entry-btn {
+  display: flex; align-items: center; width: 100%; padding: 20px; margin: 12px 0;
+  background: white; border: none; border-radius: 12px; cursor: pointer; text-align: left;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.entry-btn .icon { font-size: 36px; margin-right: 16px; }
+.entry-btn .btn-label { font-size: 17px; font-weight: 600; }
+.entry-btn .btn-desc { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+
+/* Tabs */
+.tabs, .page-tabs {
+  display: flex; background: white; border-bottom: 1px solid #e5e5e5;
+  position: sticky; top: 51px; z-index: 9;
+}
+.tab, .page-tab {
+  flex: 1; text-align: center; padding: 12px; font-size: 14px;
+  cursor: pointer; color: #888; border-bottom: 2px solid transparent;
+}
+.tab.active, .page-tab.active { color: var(--green); border-bottom-color: var(--green); font-weight: 600; }
+
+/* Card & Form */
+.card {
+  background: white; border-radius: 12px; padding: 16px;
+  margin: 12px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.form-group { margin-bottom: 12px; }
+.form-group label { font-size: 13px; color: #888; display: block; margin-bottom: 6px; }
+.form-group input, .form-group textarea {
+  width: 100%; height: 44px; border: 1px solid #e5e5e5; border-radius: 8px;
+  padding: 0 12px; font-size: 15px; background: #fafafa;
+  outline: none; transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group textarea:focus { border-color: var(--green); background: white; }
+.form-group textarea { height: auto; min-height: 80px; padding: 10px 12px; resize: vertical; }
+.price { text-align: center; font-size: 13px; color: #888; margin-bottom: 8px; }
+
+/* Buttons */
+.btn {
+  width: 100%; height: 44px; border: none; border-radius: 8px;
+  font-size: 16px; font-weight: 600; cursor: pointer; text-align: center;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-primary { background: var(--green); color: white; }
+.btn-danger { background: var(--danger); color: white; }
+.btn-outline { background: white; border: 1px solid #ddd; color: var(--text); }
+.btn-sm { height: 32px; font-size: 13px; font-weight: 500; padding: 0 12px; width: auto; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+
+/* Orders */
+.order-item {
+  background: white; margin: 0 16px 10px; padding: 14px 16px;
+  border-radius: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.order-item .top-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px; }
+.order-item .price { color: #e53935; font-weight: 700; font-size: 15px; }
+.order-item .meta { display: flex; gap: 12px; font-size: 12px; color: #888; align-items: center; }
+
+/* Status */
+.status-badge, [class*="status-"] {
+  font-size: 12px; padding: 2px 6px; border-radius: 4px;
+}
+.status-pending { background: #fff3e0; color: #e65100; }
+.status-accepted, .status-in_transit { background: #e3f2fd; color: #1565c0; }
+.status-completed { background: #e8f5e9; color: #1b5e20; }
+.status-cancelled { background: #ffebee; color: #c62828; }
+.status-disputed { background: #f3e5f5; color: #6a1b9a; }
+
+/* Detail rows */
+.detail-row { display: flex; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.detail-row:last-child { border-bottom: none; }
+.detail-row .label { width: 76px; font-size: 13px; color: #888; flex-shrink: 0; }
+.detail-row .value { flex: 1; font-size: 14px; word-break: break-all; }
+.detail-actions { padding: 0 16px; margin-top: 16px; }
+.detail-actions .btn + .btn { margin-top: 8px; }
+
+/* Photo Upload */
+.photo-upload {
+  display: flex; flex-direction: column; align-items: center; padding: 24px;
+  border: 2px dashed #ddd; border-radius: 8px; cursor: pointer; background: #fafafa;
+}
+.photo-upload .icon { font-size: 32px; }
+.photo-upload .text { font-size: 13px; color: #888; margin-top: 8px; }
+.photo-preview { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 8px; }
+
+/* Star Rating */
+.star-rating { text-align: center; padding: 16px 0; }
+.star { font-size: 32px; color: #ddd; cursor: pointer; margin: 0 4px; }
+.star.active { color: #ffb300; }
+
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 100; align-items: center; justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+.modal-content {
+  background: white; border-radius: 12px; padding: 24px;
+  width: 85%; max-width: 400px; max-height: 80vh; overflow-y: auto;
+}
+.modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+.modal-actions .btn { flex: 1; }
+
+/* Toast */
+.toast {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  background: rgba(0,0,0,0.75); color: #fff; padding: 12px 24px;
+  border-radius: 8px; font-size: 14px; z-index: 200;
+  opacity: 0; transition: opacity 0.3s; pointer-events: none;
+}
+.toast.show { opacity: 1; }
+
+/* Filter tabs */
+.filter-tabs { display: flex; padding: 8px 16px; gap: 8px; flex-wrap: wrap; }
+.filter-tab {
+  padding: 4px 12px; font-size: 13px; border-radius: 12px; cursor: pointer;
+  background: white; border: 1px solid #eee; color: #888;
+}
+.filter-tab.active { background: var(--green); color: white; border-color: var(--green); }
+
+/* Stats Grid */
+.stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; padding: 12px 16px; }
+.stat-card { background: white; padding: 16px; text-align: center; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.stat-card .number { font-size: 24px; font-weight: 700; color: var(--green); display: block; }
+.stat-card .label { font-size: 12px; color: #888; margin-top: 4px; display: block; }
+
+/* Table */
+.table-wrap { overflow-x: auto; margin: 12px 16px; }
+.table-wrap table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table-wrap td, .table-wrap th { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
+.table-wrap th { background: var(--bg); font-weight: 600; }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 60px 20px; color: #888; }
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; }
+
+/* Price card */
+.price-card { background: var(--green-light); padding: 12px; border-radius: 8px; margin: 12px 16px; font-size: 13px; }
+.price-card .row { display: flex; justify-content: space-between; padding: 3px 0; }
+
+/* Misc */
+.text-center { text-align: center; }
+.role-badge { font-size: 11px; background: #e3f2fd; color: #1565c0; padding: 1px 6px; border-radius: 4px; }
+
+</style>
+</head>
+<body>
+  <div class="app-container" id="app">
+    
+    <!-- ===== Entry Page ===== -->
+    <div class="page active" id="page-entry">
+      <div class="entry-header">
+        <span class="admin-badge" onclick="showAuth('admin')">鈿欙笍 绠＄悊</span>
+      </div>
+      <div class="entry-grid">
+        <div class="app-brand">
+          <span class="logo">馃摝</span>
+          <div class="entry-title">SUES 鏍″洯蹇€?/div>
+          <div class="entry-subtitle">涓婃捣宸ョ▼鎶€鏈ぇ瀛?路 鏍″洯鍐?/div>
+        </div>
+        <button class="entry-btn pickup" onclick="showAuth('publisher')">
+          <span class="icon">馃摦</span>
+          <span class="btn-label">鎴戣鍙栦欢</span>
+          <span class="btn-desc">鍙戝竷鍙栦欢璁㈠崟 路 绛夊緟鎺ュ崟</span>
+        </button>
+        <button class="entry-btn delivery" onclick="showAuth('delivery')">
+          <span class="icon">馃殮</span>
+          <span class="btn-label">鎴戣鎺ュ崟</span>
+          <span class="btn-desc">鎺ュ崟閰嶉€?路 璧氬彇鎶ラ叕</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== Auth Page ===== -->
+    <div class="page" id="page-auth">
+      <div class="top-nav">
+        <span class="back-btn" onclick="showEntry()">鈥?/span>
+        <span class="title" id="auth-title">鐧诲綍</span>
+      </div>
+      <div style="padding: 20px 16px;">
+        <input type="hidden" id="auth-target-role" value="publisher">
+        <input type="hidden" id="auth-mode" value="login">
+        <div id="auth-form">
+          <div class="form-group">
+            <label>鐢ㄦ埛鍚?/label>
+            <input type="text" id="auth-username" placeholder="璇疯緭鍏ョ敤鎴峰悕">
+          </div>
+          <div class="form-group">
+            <label>瀵嗙爜</label>
+            <input type="password" id="auth-password" placeholder="璇疯緭鍏ュ瘑鐮?>
+          </div>
+          <div class="form-group" id="auth-phone-group" style="display:none">
+            <label>鎵嬫満鍙?/label>
+            <input type="tel" id="auth-phone" placeholder="璇疯緭鍏ユ墜鏈哄彿">
+          </div>
+          <button class="btn btn-primary btn-block mt-16" id="auth-submit-btn" onclick="handleAuth()">鐧诲綍</button>
+          <p class="text-center mt-16">
+            <span style="font-size:13px;color:var(--text-secondary);cursor:pointer" id="auth-toggle" onclick="toggleAuthMode()">娌℃湁璐﹀彿锛熷幓娉ㄥ唽</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Publisher Page ===== -->
+    <div class="page" id="page-publisher">
+      <div class="top-nav">
+        <span class="back-btn" onclick="showEntry()">鈥?/span>
+        <span class="title">馃摦 鍙栦欢</span>
+        <span style="font-size:13px;cursor:pointer" onclick="logout()">閫€鍑?/span>
+      </div>
+      <div class="page-tabs">
+        <div class="page-tab active" onclick="switchPubTab('publish')">鍙戝竷璁㈠崟</div>
+        <div class="page-tab" onclick="switchPubTab('myorders')">鎴戠殑璁㈠崟</div>
+      </div>
+      <div id="pub-publish">
+      <div class="price-card"><div style="font-size:13px;font-weight:600;margin-bottom:8px;">馃挵 浠锋牸琛?/div>
+        <div class="row"><span>0-0.5kg</span><span style="font-weight:600;">楼2</span></div>
+        <div class="row"><span>0.5-1kg</span><span style="font-weight:600;">楼4</span></div>
+        <div class="row"><span>1-2kg</span><span style="font-weight:600;">楼6</span></div>
+        <div class="row"><span>2-5kg</span><span style="font-weight:600;">楼10</span></div>
+        <div class="row" style="border-top:1px solid var(--border);padding-top:6px;margin-top:6px;"><span>瓒呰繃5kg姣弅g鍔?/span><span style="font-weight:600;">楼2</span></div>
+      </div>
+      <div class="card" style="margin-top:12px;">
+        <div class="form-group">
+          <label>鍙栦欢鍦板潃</label>
+          <input type="text" id="pub-pickup-addr" placeholder="濡傦細涓夋湡瀹胯垗14鍙锋ゼ">
+        </div>
+        <div class="form-group">
+          <label>鍙栦欢鐮?/label>
+          <input type="text" id="pub-pickup-code" placeholder="鍙栬揣楠岃瘉鐮?瀵嗙爜">
+        </div>
+        <div class="form-group">
+          <label>閫佽揪鍦板潃</label>
+          <input type="text" id="pub-delivery-addr" placeholder="濡傦細鏁欏妤糀搴?>
+        </div>
+        <div class="form-group">
+          <label>蹇€掔紪鍙?/label>
+          <input type="text" id="pub-tracking" placeholder="蹇€掑崟鍙?>
+        </div>
+        <div class="form-group">
+          <label>閲嶉噺锛坘g锛岃秴杩?kg姣弅g鍔犅?锛?/label>
+          <input type="number" id="pub-weight" placeholder="0" step="0.1" min="0">
+        </div>
+        <div class="form-group">
+          <label>澶囨敞</label>
+          <textarea id="pub-notes" placeholder="鍏朵粬璇存槑..."></textarea>
+        </div>
+        <div id="pub-price-preview" style="text-align:center;font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+          棰勪及浠锋牸锛毬?span id="pub-price-amount">2.00</span>
+          <span id="pub-payment-type"></span>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="publishOrder()">鍙戝竷璁㈠崟</button>
+      </div>
+      </div>
+      <div id="pub-myorders" style="display:none">
+        <div class="filter-tabs">
+          <span class="filter-tab active" onclick="filterMyOrders('all',this)">鍏ㄩ儴</span>
+          <span class="filter-tab" onclick="filterMyOrders('pending',this)">寰呮帴鍗?/span>
+          <span class="filter-tab" onclick="filterMyOrders('accepted',this)">宸叉帴鍗?/span>
+          <span class="filter-tab" onclick="filterMyOrders('completed',this)">宸插畬鎴?/span>
+        </div>
+        <div id="pub-orders-list"></div>
+      </div>
+    </div>
+
+    <!-- ===== Delivery Page ===== -->
+    <div class="page" id="page-delivery">
+      <div class="top-nav">
+        <span class="back-btn" onclick="showEntry()">鈥?/span>
+        <span class="title">馃殮 鎺ュ崟</span>
+        <span style="font-size:13px;cursor:pointer" onclick="logout()">閫€鍑?/span>
+      </div>
+      <div class="page-tabs">
+        <div class="page-tab active" onclick="switchDelTab('available')">鍙帴璁㈠崟</div>
+        <div class="page-tab" onclick="switchDelTab('mine')">鎴戠殑鎺ュ崟</div>
+      </div>
+      <div id="del-available">
+        <div id="del-orders-list"></div>
+      </div>
+      <div id="del-mine" style="display:none">
+        <div class="filter-tabs">
+          <span class="filter-tab active" onclick="filterMyDeliveries('all',this)">鍏ㄩ儴</span>
+          <span class="filter-tab" onclick="filterMyDeliveries('accepted',this)">杩涜涓?/span>
+          <span class="filter-tab" onclick="filterMyDeliveries('completed',this)">宸插畬鎴?/span>
+        </div>
+        <div id="del-mine-list"></div>
+      </div>
+    </div>
+
+    <!-- ===== Admin Page ===== -->
+    <div class="page" id="page-admin">
+      <div class="top-nav">
+        <span class="back-btn" onclick="showEntry()">鈥?/span>
+        <span class="title">鈿欙笍 绠＄悊鍚庡彴</span>
+        <span style="font-size:13px;cursor:pointer" onclick="logout()">閫€鍑?/span>
+      </div>
+      <div class="stats-grid" id="admin-stats"></div>
+      <div class="page-tabs">
+        <div class="page-tab active" onclick="switchAdminTab('dashboard',this)">姒傝</div>
+        <div class="page-tab" onclick="switchAdminTab('verify',this)">璁よ瘉瀹℃牳</div>
+        <div class="page-tab" onclick="switchAdminTab('orders',this)">璁㈠崟绠＄悊</div>
+        <div class="page-tab" onclick="switchAdminTab('users',this)">鐢ㄦ埛绠＄悊</div>
+      </div>
+      <div id="admin-dashboard">
+        <div id="admin-dash-content"></div>
+      </div>
+      <div id="admin-verify" style="display:none">
+        <div id="admin-verify-list"></div>
+      </div>
+      <div id="admin-orders" style="display:none">
+        <div id="admin-orders-list"></div>
+      </div>
+      <div id="admin-users" style="display:none">
+        <div id="admin-users-list"></div>
+      </div>
+    </div>
+
+    <!-- ===== Order Detail Page ===== -->
+    <div class="page" id="page-order-detail">
+      <div class="top-nav">
+        <span class="back-btn" onclick="closeDetail()">鈥?/span>
+        <span class="title">璁㈠崟璇︽儏</span>
+      </div>
+      <div id="order-detail-content" style="padding: 12px 0;"></div>
+    </div>
+
+  </div>
+
+  <!-- ===== Modal ===== -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal-content" id="modal-body"></div>
+  </div>
+
+  <!-- ===== Toast ===== -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+var API_URL = 'https://sues-express.onrender.com/api';
+let state = { user: null, token: null, role: null, currentDetail: null };
+
+window.onload = function() { showPage('page-entry'); };
+const TOKEN_KEY = 'sues_express_token';
+const USER_KEY = 'sues_express_user';
+
+// Initialize at top level (DOM is ready since script is at end of body)
+try {
+    var saved = localStorage.getItem(TOKEN_KEY);
+    var userData = localStorage.getItem(USER_KEY);
+    if (saved && userData) {
+        state.token = saved;
+        state.user = JSON.parse(userData);
+        state.role = state.user.role;
+        if (state.role === 'publisher') { showPage('page-publisher'); loadMyOrders(); }
+        else if (state.role === 'delivery') { showPage('page-delivery'); checkDeliveryStatus(); }
+        else if (['admin','super_admin'].includes(state.role)) { showPage('page-admin'); loadAdminDashboard(); }
+        else showEntry();
+    }
+} catch(e) {}
+try {
+    var pw = document.getElementById('pub-weight');
+    if (pw) pw.addEventListener('input', updatePricePreview);
+} catch(e) {}
+
+
+
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+  document.getElementById(pageId).style.display = 'block';
+}
+
+function showAuth(role) {
+  console.log('SHOW_AUTH_CALLED role=' + role);
+  document.getElementById('auth-target-role').value = role;
+  showPage('page-auth');
+}
+
+async function handleAuth() {
+  console.log('HANDLE_AUTH_CALLED');
+  const username = document.getElementById('auth-username').value.trim();
+  const password = document.getElementById('auth-password').value.trim();
+  if (!username || !password) { alert('璇峰～鍐欑敤鎴峰悕鍜屽瘑鐮?); return; }
+  if (password.length < 6) { alert('瀵嗙爜鑷冲皯闇€瑕?浣?); return; }
+  
+  const role = document.getElementById('auth-target-role').value;
+  const isLogin = document.getElementById('auth-mode').value === 'login';
+  
+  try {
+    let data;
+    if (isLogin) {
+      data = await api('/auth/login', { method: 'POST', body: JSON.stringify({ username, password, login_role: role }) });
+    } else {
+      data = await api('/auth/register', { method: 'POST', body: JSON.stringify({ username, password, role }) });
+    }
+    alert((isLogin ? '鐧诲綍' : '娉ㄥ唽') + '鎴愬姛!');
+    state.user = data.user;
+    state.token = data.token;
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    if (role === 'publisher') showPage('page-publisher');
+    else if (role === 'delivery') showPage('page-delivery');
+    else showPage('page-admin');
+  } catch(e) { alert(e.message); }
+}
+
+async function api(path, options = {}) {
+  const headers = { 'Content-Type': 'application/json', ...options.headers };
+  if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
+  const res = await fetch(API_URL + path, { ...options, headers });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || '璇锋眰澶辫触');
+  return data;
+}
+
+function logout() {
+  state = { user: null, token: null, role: null };
+  localStorage.clear();
+  showPage('page-entry');
+}
+
+// Make functions global
+window.showAuth = showAuth;
+window.handleAuth = handleAuth;
+window.logout = logout;
+window.showAuth = showAuth;
+window.handleAuth = handleAuth;
+window.logout = logout;
+// ==== Publisher Functions ====
+function updatePricePreview() {
+  const weight = parseFloat(document.getElementById('pub-weight').value) || 0;
+  let price;
+  if (weight <= 0.5) price = 2;
+  else if (weight <= 1) price = 4;
+  else if (weight <= 2) price = 6;
+  else if (weight <= 5) price = 10;
+  else price = 10 + (weight - 5) * 2;
+  document.getElementById('pub-price-amount').textContent = price.toFixed(2);
+  const pt = document.getElementById('pub-payment-type');
+  if (pt) pt.innerHTML = price < 10 ? '[COD]' : '[PREPAY]';
+}
+async function publishOrder() {
+  const fields = { pickup_address: 'pub-pickup-addr', pickup_code: 'pub-pickup-code',
+    delivery_address: 'pub-delivery-addr', tracking_number: 'pub-tracking' };
+  const data = {};
+  for (const [k, id] of Object.entries(fields)) {
+    const val = document.getElementById(id).value.trim();
+    if (!val) { showToast('璇峰～鍐欐墍鏈夊繀濉俊鎭?); return; }
+    data[k] = val;
+  }
+  data.weight = parseFloat(document.getElementById('pub-weight').value) || 0;
+  data.notes = document.getElementById('pub-notes').value.trim();
+  try {
+    await api('/orders', { method: 'POST', body: JSON.stringify(data) });
+    showToast('璁㈠崟鍙戝竷鎴愬姛');
+    for (const id of Object.values(fields)) document.getElementById(id).value = '';
+    document.getElementById('pub-weight').value = '';
+    document.getElementById('pub-notes').value = '';
+    updatePricePreview();
+    switchPubTab('myorders'); loadMyOrders();
+  } catch(e) { showToast(e.message); }
+}
+function switchPubTab(tab) {
+  document.querySelectorAll('#page-publisher .page-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('pub-publish').style.display = tab === 'publish' ? 'block' : 'none';
+  document.getElementById('pub-myorders').style.display = tab === 'myorders' ? 'block' : 'none';
+  const tabs = document.querySelectorAll('#page-publisher .page-tab');
+  if (tab === 'publish') tabs[0].classList.add('active'); else tabs[1].classList.add('active');
+  if (tab === 'myorders') loadMyOrders();
+}
+async function loadMyOrders(status) {
+  const c = document.getElementById('pub-orders-list');
+  try {
+    const url = status && status !== 'all' ? '/orders?status=' + status : '/orders';
+    const orders = await api(url);
+    if (!orders.length) { c.innerHTML = '<div class="empty-state"><div class="icon">馃摥</div><p>鏆傛棤璁㈠崟</p></div>'; return; }
+    c.innerHTML = orders.map(o => renderOrderItem(o, 'publisher')).join('');
+  } catch(e) { c.innerHTML = '<div class="empty-state"><p>' + e.message + '</p></div>'; }
+}
+function filterMyOrders(status, el) {
+  document.querySelectorAll('#pub-myorders .filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active'); loadMyOrders(status);
+}
+}
+// ==== Constants and Utilities ====
+const statusLabels = { pending: '寰呮帴鍗?, accepted: '宸叉帴鍗?, in_transit: '閰嶉€佷腑', completed: '宸插畬鎴?, cancelled: '宸插彇娑?, disputed: '鐢宠瘔涓? };
+const sizeLabels = { small: '灏忎欢', medium: '涓欢', large: '澶т欢', xlarge: '瓒呭ぇ浠? };
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg; t.classList.remove('show'); void t.offsetWidth;
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000);
+}
+function closeDetail() {
+  if (state.role === 'publisher') showPage('page-publisher');
+  else if (state.role === 'delivery') showPage('page-delivery');
+  else showPage('page-admin');
+}
+// ==== Delivery Functions ====
+let deliveryVerified = false;
+async function checkDeliveryStatus() {
+  try {
+    const dp = await api('/delivery/status');
+    deliveryVerified = dp.status === 'approved';
+    if (dp.status === 'none') showDeliveryApplyForm();
+    else if (dp.status === 'pending') {
+      document.getElementById('del-orders-list').innerHTML = '<div class="card"><p style="text-align:center;color:var(--warning);">鈴?瀹炲悕璁よ瘉瀹℃牳涓紝璇疯€愬績绛夊緟</p></div>';
+    } else if (dp.status === 'rejected') showDeliveryApplyForm('璁よ瘉琚嫆缁濓紝璇烽噸鏂版彁浜?);
+    else if (dp.status === 'approved') {
+      if (dp.is_blocked) {
+        document.getElementById('del-orders-list').innerHTML = '<div class="card"><p style="text-align:center;color:var(--danger);">鈿狅笍 宸茶闄愬埗鎺ュ崟锛堣鍛? + dp.warning_count + '/3娆★級<br>璇疯仈绯荤鐞嗗憳瑙ｉ櫎</p></div>';
+      }
+      loadAvailableOrders();
+    }
+  } catch(e) { showDeliveryApplyForm(); }
+}
+function showDeliveryApplyForm(msg) {
+  document.getElementById('del-orders-list').innerHTML =
+    '<div class="card">' + (msg ? '<p style="color:var(--danger);margin-bottom:12px;">' + msg + '</p>' : '') +
+    '<div class="form-group"><label>鐪熷疄濮撳悕</label><input type="text" id="del-real-name" placeholder="濮撳悕"></div>' +
+    '<div class="form-group"><label>鎵嬫満鍙?/label><input type="tel" id="del-phone" placeholder="鎵嬫満鍙?></div>' +
+    '<div class="form-group"><label>瀛﹀彿</label><input type="text" id="del-student-id" placeholder="瀛﹀彿"></div>' +
+    '<div class="form-group"><label>瀛﹂櫌</label><input type="text" id="del-college" placeholder="瀛﹂櫌"></div>' +
+    '<div class="form-group"><label>瀛︾敓璇佺収鐗?/label>' +
+    '<div class="photo-upload" onclick="document.getElementById(\'del-photo-input\').click()">' +
+    '<span class="icon">馃摲</span><span class="text">鐐瑰嚮涓婁紶瀛︾敓璇佺収鐗?/span>' +
+    '<img id="del-photo-preview" class="photo-preview" style="display:none"></div>' +
+    '<input type="file" id="del-photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this,\'del-photo-preview\')">' +
+    '</div><button class="btn btn-primary btn-block" onclick="submitDeliveryApply()">鎻愪氦璁よ瘉</button></div>';
+}
+function previewPhoto(input, id) {
+  const preview = document.getElementById(id);
+  if (input.files && input.files[0]) {
+    const r = new FileReader();
+    r.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+    r.readAsDataURL(input.files[0]);
+  }
+}
+async function submitDeliveryApply() {
+  const fields = { real_name: 'del-real-name', phone: 'del-phone', student_id: 'del-student-id', college: 'del-college' };
+  for (const [k, id] of Object.entries(fields)) { if (!document.getElementById(id).value.trim()) { showToast('璇峰～鍐欐墍鏈変俊鎭?); return; } }
+  const pi = document.getElementById('del-photo-input');
+  if (!pi.files || !pi.files[0]) { showToast('璇蜂笂浼犲鐢熻瘉鐓х墖'); return; }
+  const fd = new FormData();
+  for (const [k, id] of Object.entries(fields)) fd.append(k, document.getElementById(id).value.trim());
+  fd.append('student_card_photo', pi.files[0]);
+  try { await apiForm('/delivery/apply', fd); showToast('璁よ瘉鐢宠宸叉彁浜?); checkDeliveryStatus(); }
+  catch(e) { showToast(e.message); }
+}
+function switchDelTab(tab) {
+  document.querySelectorAll('#page-delivery .page-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('del-available').style.display = tab === 'available' ? 'block' : 'none';
+  document.getElementById('del-mine').style.display = tab === 'mine' ? 'block' : 'none';
+  const tabs = document.querySelectorAll('#page-delivery .page-tab');
+  if (tab === 'available') { tabs[0].classList.add('active'); loadAvailableOrders(); }
+  else { tabs[1].classList.add('active'); loadMyDeliveries(); }
+}
+async function loadAvailableOrders() {
+  const c = document.getElementById('del-orders-list');
+  try {
+    const orders = await api('/orders/available');
+    if (!orders.length) { c.innerHTML = '<div class="empty-state"><div class="icon">馃攳</div><p>鏆傛棤鍙敤璁㈠崟</p></div>'; return; }
+    c.innerHTML = orders.map(o => renderOrderItem(o, 'delivery')).join('');
+  } catch(e) { c.innerHTML = '<div class="empty-state"><p>' + e.message + '</p></div>'; }
+}
+async function loadMyDeliveries(status) {
+  const c = document.getElementById('del-mine-list');
+  try {
+    const url = status && status !== 'all' ? '/orders?status=' + status : '/orders?status=mine';
+    const orders = await api(url);
+    if (!orders.length) { c.innerHTML = '<div class="empty-state"><div class="icon">馃搵</div><p>鏆傛棤鎺ュ崟璁板綍</p></div>'; return; }
+    c.innerHTML = orders.map(o => renderOrderItem(o, 'delivery')).join('');
+  } catch(e) { c.innerHTML = '<div class="empty-state"><p>' + e.message + '</p></div>'; }
+}
+function filterMyDeliveries(status, el) {
+  document.querySelectorAll('#del-mine .filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active'); loadMyDeliveries(status);
+}
+async function acceptOrder(id) {
+  try { await api('/orders/' + id + '/accept', { method: 'POST' }); showToast('鎺ュ崟鎴愬姛锛佸彲鏌ョ湅瀹屾暣蹇€掔紪鍙?);
+    loadAvailableOrders(); loadMyDeliveries(); } catch(e) { showToast(e.message); }
+}
+// ==== Render Functions ====
+function renderOrderItem(order, role) {
+  const cls = 'status-' + order.status;
+  const ps = order.pickup_address.length > 12 ? order.pickup_address.slice(0,12)+'...' : order.pickup_address;
+  const ds = order.delivery_address.length > 12 ? order.delivery_address.slice(0,12)+'...' : order.delivery_address;
+  const acceptBtn = (role === 'delivery' && order.status === 'pending')
+    ? '<button class="btn btn-sm btn-primary" style="margin-top:6px;" onclick="event.stopPropagation();acceptOrder('+order.id+')">鎺ュ崟</button>' : '';
+  return '<div class="order-item" onclick="showOrderDetail('+order.id+')">' +
+    '<div class="top-row"><span class="route">' + ps + ' 鈫?' + ds + '</span><span class="price">楼' + order.price.toFixed(2) + '</span></div>' +
+    '<div class="meta"><span>澶у皬 ' + (sizeLabels[order.package_size]||order.package_size) + '</span><span>鍗曞彿 ' + order.tracking_number + '</span><span class="' + cls + '">' + (statusLabels[order.status]||order.status) + '</span></div>' +
+    acceptBtn + '</div>';
+}
+// ==== Order Detail Functions ====
+async function showOrderDetail(id) {
+  try {
+    const order = await api('/orders/' + id);
+    state.currentDetail = order;
+    showPage('page-order-detail');
+    const c = document.getElementById('order-detail-content');
+    const canSee = !order.tracking_number.includes('****');
+    const cls = 'status-' + order.status;
+    let actions = '';
+    if (state.role === 'delivery' && order.status === 'pending' && deliveryVerified)
+      actions += '<button class="btn btn-primary btn-block" onclick="acceptOrder(' + order.id + ')">鎺ュ崟</button>';
+    if (state.role === 'delivery' && order.delivery_person_id === state.user.id && ['accepted','in_transit'].includes(order.status))
+      actions += getCompleteFormHTML(order.id);
+    if (state.role === 'delivery' && order.delivery_person_id === state.user.id && order.status === 'accepted')
+      actions += '<button class="btn btn-danger btn-block mt-8" onclick="cancelOrder(' + order.id + ')">鍙栨秷鎺ュ崟</button>';
+    if (state.role === 'publisher' && order.publisher_id === state.user.id && order.status === 'pending')
+      actions += '<button class="btn btn-danger btn-block" onclick="cancelOrder(' + order.id + ')">鍙栨秷璁㈠崟</button>';
+    if (state.role === 'publisher' && order.publisher_id === state.user.id && order.status === 'completed' && !order.rating)
+      actions += '<button class="btn btn-primary btn-block" onclick="showRatingForm(' + order.id + ')">璇勪环鎺ュ崟浜?/button>';
+    if (state.role === 'publisher' && order.publisher_id === state.user.id && order.status === 'completed' && !order.paid)
+      actions += '<button class="btn btn-primary btn-block mt-8" onclick="payOrder(' + order.id + ',' + order.price + ')">鏀粯 楼' + order.price.toFixed(2) + '</button>';
+    if (state.role === 'publisher' && order.publisher_id === state.user.id && order.status === 'completed' && order.paid)
+      actions += '<div class="card" style="background:var(--green-light);text-align:center;color:var(--green);">鉁?宸叉敮浠?/div>';
+    if (state.role === 'publisher' && order.publisher_id === state.user.id && order.status === 'completed')
+      actions += '<button class="btn btn-outline btn-block mt-8" onclick="showDisputeForm(' + order.id + ')">鍙戣捣鐢宠瘔</button>';
+    if (state.role === 'publisher' && order.publisher_id === state.user.id && order.status === 'disputed')
+      actions += '<div class="card" style="background:#FFF3E0;text-align:center;">鈴?姝ｅ湪鐢宠瘔澶勭悊涓?/div>';
+    if (['admin','super_admin'].includes(state.role) && order.status === 'disputed')
+      actions += '<button class="btn btn-primary btn-block mt-8" onclick="resolveDispute(' + order.id + ')">澶勭悊鐢宠瘔</button>';
+    if (['admin','super_admin'].includes(state.role) && ['accepted','in_transit'].includes(order.status))
+      actions += '<button class="btn btn-outline btn-block mt-8" onclick="adminCancelOrder(' + order.id + ')">绠＄悊鍛樺彇娑堣鍗?/button>';
+
+    c.innerHTML = '<div class="card">' +
+      '<div class="detail-row"><span class="label">鐘舵€?/span><span class="value"><span class="status-badge ' + cls + '">' + (statusLabels[order.status]||order.status) + '</span></span></div>' +
+      '<div class="detail-row"><span class="label">鍙栦欢鍦板潃</span><span class="value">' + order.pickup_address + '</span></div>' +
+      '<div class="detail-row"><span class="label">鍙栦欢鐮?/span><span class="value">' + (canSee ? order.pickup_code : '馃敀 鎺ュ崟鍚庡彲瑙?) + '</span></div>' +
+      '<div class="detail-row"><span class="label">閫佽揪鍦板潃</span><span class="value">' + order.delivery_address + '</span></div>' +
+      '<div class="detail-row"><span class="label">蹇€掔紪鍙?/span><span class="value">' + (canSee ? order.tracking_number : '馃敀 鎺ュ崟鍚庡彲瑙?) + '</span></div>' +
+      '<div class="detail-row"><span class="label">鍖呰９澶у皬</span><span class="value">' + (sizeLabels[order.package_size]||order.package_size) + '</span></div>' +
+      '<div class="detail-row"><span class="label">閲嶉噺</span><span class="value">' + order.weight + 'kg</span></div>' +
+      '<div class="detail-row"><span class="label">浠锋牸</span><span class="value" style="font-weight:700;color:var(--danger)">楼' + order.price.toFixed(2) + '</span></div>' +
+      (order.delivery_person_name ? '<div class="detail-row"><span class="label">鎺ュ崟浜?/span><span class="value">' + order.delivery_person_name + '</span></div>' : '') +
+      (order.notes ? '<div class="detail-row"><span class="label">澶囨敞</span><span class="value">' + order.notes + '</span></div>' : '') +
+      '<div class="detail-row"><span class="label">鍒涘缓鏃堕棿</span><span class="value">' + (order.created_at||'') + '</span></div>' +
+      (order.completion_photo ? '<div class="detail-row"><span class="label">瀹屾垚鐓х墖</span><span class="value"><img src="' + API_URL + '/uploads/' + order.completion_photo + '" style="max-width:100%;border-radius:8px;"></span></div>' : '') +
+      (order.rating ? '<div class="detail-row"><span class="label">璇勪环</span><span class="value">' + '猸?.repeat(order.rating.rating) + ' ' + (order.rating.comment||'') + '</span></div>' : '') +
+      '</div>' + (actions ? '<div class="detail-actions">' + actions + '</div>' : '');
+  } catch(e) { showToast(e.message); }
+}
+function getCompleteFormHTML(orderId) {
+  return '<div class="card" style="margin-top:8px;">' +
+    '<p style="font-size:13px;margin-bottom:8px;">馃摳 璇蜂笂浼犲鑸嶆ゼ涓嬬収鐗囦綔涓哄畬鎴愯瘉鏄?/p>' +
+    '<div class="photo-upload" onclick="document.getElementById(\'complete-photo-input\').click()">' +
+    '<span class="icon">馃摲</span><span class="text">鐐瑰嚮鎷嶇収/涓婁紶</span>' +
+    '<img id="complete-photo-preview" class="photo-preview" style="display:none"></div>' +
+    '<input type="file" id="complete-photo-input" accept="image/*" style="display:none" onchange="previewPhotoComplete(this)">' +
+    '<button class="btn btn-primary btn-block mt-8" onclick="completeOrder(' + orderId + ')">纭瀹屾垚</button></div>';
+}
+let completePhotoFile = null;
+function previewPhotoComplete(input) {
+  if (input.files && input.files[0]) {
+    completePhotoFile = input.files[0];
+    const r = new FileReader();
+    r.onload = e => { document.getElementById('complete-photo-preview').src = e.target.result;
+      document.getElementById('complete-photo-preview').style.display = 'block'; };
+    r.readAsDataURL(input.files[0]);
+  }
+}
+async function completeOrder(orderId) {
+  if (!completePhotoFile) { showToast('璇峰厛涓婁紶瀹屾垚鐓х墖'); return; }
+  const fd = new FormData(); fd.append('photo', completePhotoFile);
+  try { await apiForm('/orders/' + orderId + '/complete', fd); showToast('璁㈠崟宸插畬鎴愶紒');
+    completePhotoFile = null; loadMyDeliveries(); showOrderDetail(orderId);
+  } catch(e) { showToast(e.message); }
+}
+async function cancelOrder(orderId) {
+  if (!confirm('纭畾瑕佸彇娑堟璁㈠崟鍚楋紵鎺ュ崟鍚庡彇娑堝皢浼氳褰曡鍛婏紒')) return;
+  try { const res = await api('/orders/' + orderId + '/cancel', { method: 'POST' }); showToast(res.message||'宸插彇娑?); closeDetail(); }
+  catch(e) { showToast(e.message); }
+}
+// ==== Rating Functions ====
+let currentRating = 0;
+function showRatingForm(orderId) {
+  currentRating = 0;
+  document.getElementById('modal-body').innerHTML = '<h3 style="margin-bottom:12px;">璇勪环鎺ュ崟浜?/h3>' +
+    '<div class="star-rating" id="rating-stars">' +
+    [1,2,3,4,5].map(i => '<span class="star" data-val="' + i + '" onclick="setRating(' + i + ')">鈽?/span>').join('') +
+    '</div><div class="form-group"><label>璇勪环鍐呭</label><textarea id="rating-comment" placeholder="璇磋浣犵殑浣撻獙..." rows="3"></textarea></div>' +
+    '<div class="modal-actions"><button class="btn btn-outline" onclick="closeModal()">鍙栨秷</button>' +
+    '<button class="btn btn-primary" onclick="submitRating(' + orderId + ')">鎻愪氦璇勪环</button></div>';
+  document.getElementById('modal').classList.add('active');
+}
+function setRating(val) {
+  currentRating = val;
+  document.querySelectorAll('#rating-stars .star').forEach(s => {
+    s.classList.toggle('active', parseInt(s.dataset.val) <= val);
+  });
+}
+async function submitRating(orderId) {
+  if (!currentRating) { showToast('璇烽€夋嫨鏄熺骇璇勫垎'); return; }
+  const comment = document.getElementById('rating-comment').value.trim();
+  try { await api('/ratings', { method: 'POST', body: JSON.stringify({ order_id: orderId, rating: currentRating, comment }) });
+    showToast('璇勪环鎴愬姛'); closeModal(); showOrderDetail(orderId);
+  } catch(e) { showToast(e.message); }
+}
+function closeModal() { document.getElementById('modal').classList.remove('active'); }
+// ==== Dispute Functions ====
+function showDisputeForm(orderId) {
+  document.getElementById('modal-body').innerHTML = '<h3 style="margin-bottom:12px;">鍙戣捣鐢宠瘔</h3>' +
+    '<div class="form-group"><label>鐢宠瘔鍘熷洜</label><textarea id="dispute-reason" placeholder="璇疯缁嗘弿杩伴棶棰?.." rows="4"></textarea></div>' +
+    '<div class="modal-actions"><button class="btn btn-outline" onclick="closeModal()">鍙栨秷</button>' +
+    '<button class="btn btn-danger" onclick="submitDispute(' + orderId + ')">鎻愪氦鐢宠瘔</button></div>';
+  document.getElementById('modal').classList.add('active');
+}
+async function submitDispute(orderId) {
+  const reason = document.getElementById('dispute-reason').value.trim();
+  if (!reason) { showToast('璇峰～鍐欑敵璇夊師鍥?); return; }
+  try { await api('/disputes', { method: 'POST', body: JSON.stringify({ order_id: orderId, reason }) });
+    showToast('鐢宠瘔宸叉彁浜わ紝绛夊緟绠＄悊鍛樺鐞?); closeModal(); showOrderDetail(orderId);
+  } catch(e) { showToast(e.message); }
+}
+// ==== Payment Functions ====
+async function payOrder(orderId, amount) {
+  document.getElementById('modal-body').innerHTML = '<h3 style="margin-bottom:12px;">纭鏀粯</h3>' +
+    '<p style="text-align:center;font-size:24px;font-weight:700;color:var(--danger);margin:16px 0;">楼' + amount.toFixed(2) + '</p>' +
+    '<p style="text-align:center;font-size:13px;color:var(--text-secondary);margin-bottom:16px;">馃挸 寰俊鏀粯<br>绗竴鐗堟敮鎸佺湡瀹炲井淇℃敮浠?/p>' +
+    '<div class="modal-actions"><button class="btn btn-outline" onclick="closeModal()">鍙栨秷</button>' +
+    '<button class="btn btn-primary" onclick="confirmPay(' + orderId + ',' + amount + ')">纭鏀粯 楼' + amount.toFixed(2) + '</button></div>';
+  document.getElementById('modal').classList.add('active');
+}
+async function confirmPay(orderId, amount) {
+  try {
+    const payData = await api('/payments/create', { method: 'POST', body: JSON.stringify({ order_id: orderId }) });
+    showToast('姝ｅ湪璋冭捣寰俊鏀粯...');
+    setTimeout(async () => {
+      try {
+        await api('/payments/notify', { method: 'POST', body: JSON.stringify({
+          prepay_id: payData.prepay_id, out_trade_no: payData.prepay_id,
+          transaction_id: 'wx_sim_' + Date.now()
+        })});
+        showToast('鏀粯鎴愬姛锛?); closeModal(); showOrderDetail(orderId);
+      } catch(e) { showToast(e.message); }
+    }, 1500);
+  } catch(e) { showToast(e.message); }
+}
+
+
+// ==== Admin Functions ====
+async function loadAdminDashboard() {
+  try {
+    const stats = await api('/admin/dashboard');
+    document.getElementById('admin-stats').innerHTML =
+      '<div class="stat-card"><div class="number">' + stats.total_orders + '</div><div class="label">鎬昏鍗?/div></div>' +
+      '<div class="stat-card"><div class="number">' + stats.pending_orders + '</div><div class="label">寰呮帴鍗?/div></div>' +
+      '<div class="stat-card"><div class="number">' + stats.completed_orders + '</div><div class="label">宸插畬鎴?/div></div>' +
+      '<div class="stat-card"><div class="number">' + stats.total_delivery + '</div><div class="label">鎺ュ崟浜?/div></div>' +
+      '<div class="stat-card"><div class="number" style="color:var(--warning)">' + stats.pending_approvals + '</div><div class="label">寰呭鏍?/div></div>' +
+      '<div class="stat-card"><div class="number" style="color:var(--danger)">' + stats.blocked_delivery + '</div><div class="label">宸查檺鍒?/div></div>';
+    document.getElementById('admin-dash-content').innerHTML =
+      '<div class="card"><p style="font-size:13px;color:var(--text-secondary);">绠＄悊鍛樻彁绀猴細</p>' +
+      '<ul style="margin-top:8px;font-size:13px;line-height:1.8;padding-left:16px;">' +
+      '<li>馃攳 瀹℃牳璁よ瘉瀹℃牳涓殑瀹炲悕璁よ瘉鐢宠</li><li>馃搳 鍦ㄨ鍗曠鐞嗕腑鏌ョ湅鎵€鏈夎鍗?/li>' +
+      '<li>馃懃 鍦ㄧ敤鎴风鐞嗕腑绠＄悊鐢ㄦ埛鍜岃В闄ゆ帴鍗曢檺鍒?/li></ul></div>';
+  } catch(e) { showToast(e.message); }
+}
+function switchAdminTab(tab, el) {
+  document.querySelectorAll('#page-admin .page-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['admin-dashboard','admin-verify','admin-orders','admin-users'].forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById('admin-' + tab).style.display = 'block';
+  if (tab === 'verify') loadAdminVerify();
+  else if (tab === 'orders') loadAdminOrders();
+  else if (tab === 'users') loadAdminUsers();
+}
+async function loadAdminVerify() {
+  const c = document.getElementById('admin-verify-list');
+  try {
+    const dps = await api('/admin/delivery-persons?status=pending');
+    if (!dps.length) { c.innerHTML = '<div class="card"><p style="text-align:center;color:var(--text-secondary);">鉁?鏆傛棤寰呭鏍哥殑璁よ瘉鐢宠</p></div>'; return; }
+    c.innerHTML = dps.map(dp =>
+      '<div class="card">' +
+      '<div class="detail-row"><span class="label">濮撳悕</span><span class="value">' + dp.real_name + '</span></div>' +
+      '<div class="detail-row"><span class="label">鎵嬫満</span><span class="value">' + dp.phone + '</span></div>' +
+      '<div class="detail-row"><span class="label">瀛﹀彿</span><span class="value">' + dp.student_id + '</span></div>' +
+      '<div class="detail-row"><span class="label">瀛﹂櫌</span><span class="value">' + dp.college + '</span></div>' +
+      (dp.student_card_photo ? '<div class="detail-row"><span class="label">瀛︾敓璇?/span><span class="value"><img src="' + API_URL + '/uploads/' + dp.student_card_photo + '" style="max-width:100%;border-radius:8px;max-height:150px;"></span></div>' : '') +
+      '<div style="display:flex;gap:8px;margin-top:12px;">' +
+      '<button class="btn btn-primary btn-sm" onclick="verifyDelivery(' + dp.id + ",'" + "approve" + "')" + '">鉁?閫氳繃</button>' +
+      '<button class="btn btn-danger btn-sm" onclick="verifyDelivery(' + dp.id + ",'" + "reject" + "')" + '">鉂?鎷掔粷</button></div></div>'
+    ).join('');
+  } catch(e) { c.innerHTML = '<div class="card"><p>' + e.message + '</p></div>'; }
+}
+async function verifyDelivery(dpId, action) {
+  try { await api('/admin/delivery-persons/' + dpId + '/verify', { method: 'POST', body: JSON.stringify({ action }) });
+    showToast(action === 'approve' ? '宸查€氳繃璁よ瘉' : '宸叉嫆缁濊璇?); loadAdminVerify();
+  } catch(e) { showToast(e.message); }
+}
+async function loadAdminOrders() {
+  const c = document.getElementById('admin-orders-list');
+  try {
+    const orders = await api('/orders');
+    if (!orders.length) { c.innerHTML = '<div class="card"><p style="text-align:center;color:var(--text-secondary);">鏆傛棤璁㈠崟</p></div>'; return; }
+    c.innerHTML = '<div class="table-wrap"><table><tr><th>ID</th><th>鍦板潃</th><th>澶у皬</th><th>浠锋牸</th><th>鐘舵€?/th><th>鎿嶄綔</th></tr>' +
+      orders.map(o => '<tr><td>#' + o.id + '</td><td>' + (o.pickup_address.slice(0,8)) + '...</td><td>' + (sizeLabels[o.package_size]||o.package_size) + '</td><td>楼' + o.price.toFixed(2) + '</td><td><span class="status-' + o.status + '">' + (statusLabels[o.status]||o.status) + '</span></td><td><button class="btn btn-sm btn-outline" onclick="showOrderDetail(' + o.id + ')">璇︽儏</button></td></tr>').join('') +
+      '</table></div>';
+  } catch(e) { c.innerHTML = '<div class="card"><p>' + e.message + '</p></div>'; }
+}
+async function loadAdminUsers() {
+  const c = document.getElementById('admin-users-list');
+  try {
+    const users = await api('/admin/users');
+    c.innerHTML = users.map(u => {
+      const dp = u.delivery_profile;
+      const wc = dp ? dp.warning_count : 0;
+      const bl = dp ? dp.is_blocked : false;
+      return '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<div><strong>' + u.username + '</strong><span class="status-badge" style="background:#E3F2FD;color:#1565C0;margin-left:8px;">' + u.role + '</span></div>' +
+        '<div>' + (!u.is_active ? '<span class="status-badge status-cancelled">宸茬鐢?/span>' : '') + (bl ? '<span class="status-badge status-cancelled">闄愬埗涓?' + wc + '/3)</span>' : '') + '</div></div>' +
+        (dp ? '<div style="font-size:13px;color:var(--text-secondary);margin-top:8px;">' + dp.real_name + ' 路 ' + dp.college + ' 路 ' + dp.student_id +
+        '<span class="status-badge" style="margin-left:4px;">' + (dp.status === 'approved' ? '鉁呭凡璁よ瘉' : dp.status === 'pending' ? '鈴冲鏍镐腑' : '鉂屽凡鎷掔粷') + '</span>' +
+        '<span style="margin-left:8px;">鎺ュ崟' + (dp.total_orders||0) + '娆?路 猸? + (dp.avg_rating||0).toFixed(1) + '</span></div>' : '') +
+        '<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">' +
+        (!u.is_active ? '<button class="btn btn-sm btn-primary" onclick="adminUnblockUser(' + u.id + ')">瑙ｇ</button>' : '') +
+        (bl ? '<button class="btn btn-sm btn-primary" onclick="clearWarnings(' + dp.id + ')">瑙ｉ櫎闄愬埗</button>' : '') +
+        (dp && wc > 0 && !bl ? '<button class="btn btn-sm btn-primary" onclick="clearWarnings(' + dp.id + ')">娓呴櫎璀﹀憡</button>' : '') +
+        (u.role !== 'super_admin' && u.role !== 'admin' ? '<button class="btn btn-sm btn-outline" onclick="adminBlockUser(' + u.id + ')">绂佺敤</button>' : '') +
+        (state.role === 'super_admin' && u.role !== 'admin' && u.role !== 'super_admin' ? '<button class="btn btn-sm btn-outline" onclick="setAsAdmin(' + u.id + ')">璁句负绠＄悊鍛?/button>' : '') +
+        '</div></div>';
+    }).join('');
+  } catch(e) { c.innerHTML = '<div class="card"><p>' + e.message + '</p></div>'; }
+}
+async function adminBlockUser(userId) {
+  if (!confirm('纭畾瑕佺鐢ㄦ鐢ㄦ埛鍚楋紵')) return;
+  try { await api('/admin/users/' + userId + '/block', { method: 'POST' }); showToast('宸茬鐢?); loadAdminUsers(); }
+  catch(e) { showToast(e.message); }
+}
+async function adminUnblockUser(userId) {
+  try { await api('/admin/users/' + userId + '/unblock', { method: 'POST' }); showToast('宸茶В绂?); loadAdminUsers(); }
+  catch(e) { showToast(e.message); }
+}
+async function clearWarnings(dpId) {
+  if (!confirm('纭畾瑕佹竻闄ゆ鐢ㄦ埛鐨勮鍛婂拰闄愬埗鍚楋紵')) return;
+  try { await api('/admin/warnings/' + dpId + '/clear', { method: 'POST' }); showToast('宸叉竻闄?); loadAdminUsers(); }
+  catch(e) { showToast(e.message); }
+}
+async function setAsAdmin(userId) {
+  if (!confirm('纭畾瑕佸皢鍏惰涓虹鐞嗗憳鍚楋紵')) return;
+  try { await api('/admin/set-admin', { method: 'POST', body: JSON.stringify({ user_id: userId }) }); showToast('宸茶涓虹鐞嗗憳'); loadAdminUsers(); }
+  catch(e) { showToast(e.message); }
+}
+async function resolveDispute(orderId) {
+  const reason = prompt('璇疯緭鍏ュ鐞嗘剰瑙侊細', '宸插鐞嗭紝璁㈠崟瀹屾垚');
+  if (reason === null) return;
+  try {
+    const disputes = await api('/disputes');
+    const dispute = disputes.find(d => d.order_id === orderId);
+    if (dispute) {
+      await api('/disputes/' + dispute.id + '/resolve', { method: 'POST', body: JSON.stringify({ status: 'resolved', response: reason }) });
+      showToast('鐢宠瘔宸插鐞?); showOrderDetail(orderId);
+    }
+  } catch(e) { showToast(e.message); }
+}
+async function adminCancelOrder(orderId) {
+  if (!confirm('纭畾瑕佸彇娑堟璁㈠崟鍚楋紵')) return;
+  try { await api('/orders/' + orderId + '/cancel', { method: 'POST' }); showToast('宸插彇娑?); closeDetail(); }
+  catch(e) { showToast(e.message); }
+}
+
+
+function toggleAuthMode() {
+  const mode = document.getElementById('auth-mode');
+  mode.value = mode.value === 'login' ? 'register' : 'login';
+  const btn = document.getElementById('auth-submit-btn');
+  btn.textContent = mode.value === 'login' ? 
+'登录'
+ : 
+'注册';
+  document.getElementById('auth-toggle').textContent = mode.value === 'login' ? 
+'没有账号？去注册'
+ : 
+'已有账号？去登录';
+}
+function showEntry() { showPage('page-entry'); }
+function navigateTo(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+}
+async function apiForm(path, fd) {
+  const headers = {};
+  if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
+  const res = await fetch(API_URL + path, { method: 'POST', headers, body: fd });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || data.msg || 
+'请求失败');
+  return data;
+}
+
+</script>
+</body>
+</html>
